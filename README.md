@@ -5,7 +5,7 @@ A modification of CJC's MIDI Counter Generator that makes generating notecounter
 Basically adds a multiplier parameter such that you can just input the base file of the midi and the multiplier, and the program will do the math for you and generate a visually identical notecounter to the trillion midi.
 
 # How to use
-You will need [.NET Framework Runtime v4.8.1](https://dotnet.microsoft.com/en-us/download/dotnet-framework/thank-you/net481-web-installer)
+You will need [.NET Framework Runtime v4.8.1](https://dotnet.microsoft.com/en-us/download/dotnet-framework/thank-you/net481-web-installer).
 
 Get the download from the [releases](https://github.com/flopp1/CJCMCG-Modded/releases/tag/v0.2).
 
