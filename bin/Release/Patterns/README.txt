@@ -1,11 +1,10 @@
-How to make a Midi Counter Pattern?
+How to make a MIDI Counter Pattern?
 
-1.Add a file in the folder, like 1.txt.
-  The suffix of the filename must be .txt
-  And the pattern ID will be the prefix before ".txt" like "1" in the example
+1. Add a file in the folder, like 1.txt.
+   The suffix of the filename must be .txt
+   And the pattern ID will be the prefix before ".txt" like "1" in the example
 
-2.Make pattern.
-  Format below
+2. Make a pattern by following the format below
 --------------------------
 {Video Width}
 {Video Height}
@@ -39,4 +38,3 @@ Pattern variable list:
   {9-8}: Remaining beats
   {A}: Resolution (PPQ)
   {A,}: Resolution (PPQ) with a comma per 3 digits
-  {B}: Lyrics
