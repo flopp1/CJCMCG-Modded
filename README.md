@@ -17,7 +17,7 @@ The video will be output in the same folder as the midi.
 
 # How to build
 * Clone this repo
-* Download and install Visual Studio 2022, .NET 7.0, .NET Framework Development Kit and Runtime 4.8.1
+* Download and install Visual Studio 2022, .NET 7.0 Runtime, .NET Framework Development Kit and Runtime 4.8.1
 * Open the solution and build (Release, x64)
 * Done! (Midi Counter Generator.exe in bin/Release)
 
