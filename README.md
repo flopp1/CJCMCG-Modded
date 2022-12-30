@@ -13,3 +13,6 @@ The latest is always at the releases.
 * Open the solution and build (Release, x64)
 * Done! (Midi Counter Generator.exe in bin/Release)
 
+# Versions
+View the [changelog](CHANGELOG.md).
+
