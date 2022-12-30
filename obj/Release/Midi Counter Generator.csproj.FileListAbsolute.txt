@@ -1,0 +1,11 @@
+C:\Users\ethen\midi-counter-gen\bin\Release\Midi Counter Generator.exe.config
+C:\Users\ethen\midi-counter-gen\bin\Release\Midi Counter Generator.exe
+C:\Users\ethen\midi-counter-gen\bin\Release\Midi Counter Generator.pdb
+C:\Users\ethen\midi-counter-gen\bin\Release\SharpCompress.dll
+C:\Users\ethen\midi-counter-gen\obj\Release\Midi Counter Generator.csproj.AssemblyReference.cache
+C:\Users\ethen\midi-counter-gen\obj\Release\Midi Counter Generator.csproj.SuggestedBindingRedirects.cache
+C:\Users\ethen\midi-counter-gen\obj\Release\Midi Counter Generator.csproj.CoreCompileInputs.cache
+C:\Users\ethen\midi-counter-gen\obj\Release\Midi Counter Generator.csproj.CopyComplete
+C:\Users\ethen\midi-counter-gen\obj\Release\Midi Counter Generator.exe
+C:\Users\ethen\midi-counter-gen\obj\Release\Midi Counter Generator.pdb
+C:\Users\ethen\midi-counter-gen\bin\Release\System.Buffers.dll
