@@ -9,7 +9,7 @@ You will need [.NET Framework Runtime v4.8.1](https://dotnet.microsoft.com/en-us
 
 Get the download from the [releases](https://github.com/flopp1/CJCMCG-Modded/releases/tag/v0.2).
 
-Extract the archive using 7-Zip, then run the executable inside.
+Extract the archive using an archive extractor, then run the executable inside.
 
 To render the notecount for a trillion midi, just input the full path of the midi (Ctrl+Shift+C on Windows 11) and Ctrl+V, then enter the filename of the resulting video (it's ok most of the time to accept the default), then the delay before the start of the midi you want in the video, then your pattern (you can make your own by following the instructions [here](https://github.com/flopp1/CJCMCG-Modded/blob/master/bin/Release/Patterns/README.txt)), the text colour, then the number of times the base midi was merged to make the trillion midi.
 
