@@ -12,3 +12,5 @@ The latest is always at the releases.
 * Download and install Visual Studio 2022, .NET 7.0, .NET Framework Development Kit and Runtime 4.8.1
 * Open the solution and build (Release, x64)
 * Done! (Midi Counter Generator.exe in bin/Release)
+
+**Note: **v0.1 is not shown in the history because of some Git issues.
