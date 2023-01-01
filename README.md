@@ -15,9 +15,9 @@ To render the notecount for a trillion midi, just input the full path of the mid
 
 The video will be output in the same folder as the midi.
 
-# How to build
+# How to build [NOTE: WILL NOT WORK AS OF 1/1/23 BECAUSE STUFF IS BROKEN]
 * Clone this repo
-* Download and install Visual Studio 2022, .NET 7.0 Runtime, .NET Framework Development Kit and Runtime 4.8.1
+* Download and install Visual Studio 2022, .NET 7.0 Runtime
 * Open the solution and build (Release, x64)
 * Done! (Midi Counter Generator.exe in bin/Release)
 
@@ -26,3 +26,5 @@ View the [changelog](CHANGELOG.md).
 
 # To-do:
 * Implement notecounter text alignment (top/bottom/left/right)
+* Implement file explorer selection dialog instead of copying file path
+* Finish transition to .NET 7 and fix all the broken stuff
