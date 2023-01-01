@@ -1,0 +1,3 @@
+C:\Users\ethen\convert\obj\Debug\net7.0\Midi Counter Generator.csproj.AssemblyReference.cache
+C:\Users\ethen\convert\obj\Debug\net7.0\Midi Counter Generator.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ethen\convert\obj\Debug\net7.0\Midi Counter Generator.csproj.CoreCompileInputs.cache

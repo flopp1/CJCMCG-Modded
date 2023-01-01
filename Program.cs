@@ -4,150 +4,34 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
-using System.Drawing;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Archives.GZip;
 using SharpCompress.Compressors.Xz;
+using SkiaSharp;
+using CJCMCG;
 
-namespace Buff
+Console.Title = ("MIDI Counter Generator Modded Version 0.2 by Conjac Jelly Charlieyan and flopp");
+MainPart mp = new();
+mp.Read();
+mp.Render();
+
+namespace CJCMCG
 {
-    public class BufferByteReader
-    {
-        long pos;
-        int buffersize;
-        int bufferpos;
-        int maxbufferpos;
-        long streamstart;
-        long streamlen;
-        Stream stream;
-        byte[] buffer;
-        byte[] bufferNext;
-        Task nextReader = null;
-
-        public BufferByteReader(Stream stream, int buffersize, long streamstart, long streamlen)
-        {
-            if (buffersize > streamlen) buffersize = (int)streamlen;
-            this.buffersize = buffersize;
-            this.streamstart = streamstart;
-            this.streamlen = streamlen;
-            this.stream = stream;
-            buffer = new byte[buffersize];
-            bufferNext = new byte[buffersize];
-            UpdateBuffer(pos, true);
-        }
-
-        void UpdateBuffer(long pos, bool first = false)
-        {
-            if (first)
-            {
-                nextReader = Task.Run(() =>
-                {
-                    lock (stream)
-                    {
-                        stream.Position = pos + streamstart;
-                        stream.Read(bufferNext, 0, buffersize);
-                    }
-                });
-            }
-            nextReader.GetAwaiter().GetResult();
-            Buffer.BlockCopy(bufferNext, 0, buffer, 0, buffersize);
-            nextReader = Task.Run(() =>
-            {
-                lock (stream)
-                {
-                    stream.Position = pos + streamstart + buffersize;
-                    stream.Read(bufferNext, 0, buffersize);
-                }
-            });
-            nextReader.GetAwaiter().GetResult();
-            maxbufferpos = (int)Math.Min(streamlen - pos + 1, buffersize);
-        }
-
-        public long Location => pos;
-
-        public int Pushback { get; set; } = -1;
-
-        public byte Read()
-        {
-            if (Pushback != -1)
-            {
-                byte _b = (byte)Pushback;
-                Pushback = -1;
-                return _b;
-            }
-            byte b = buffer[bufferpos++];
-            if (bufferpos < maxbufferpos) return b;
-            else if (bufferpos >= buffersize)
-            {
-                pos += bufferpos;
-                bufferpos = 0;
-                UpdateBuffer(pos);
-                return b;
-            }
-            else throw new IndexOutOfRangeException();
-        }
-
-        public byte ReadFast()
-        {
-            byte b = buffer[bufferpos++];
-            if (bufferpos < maxbufferpos) return b;
-            else if (bufferpos >= buffersize)
-            {
-                pos += bufferpos;
-                bufferpos = 0;
-                UpdateBuffer(pos);
-                return b;
-            }
-            else throw new IndexOutOfRangeException();
-        }
-
-        public void Reset()
-        {
-            pos = 0;
-            bufferpos = 0;
-            UpdateBuffer(pos, true);
-        }
-
-        public void Skip(int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                bufferpos++;
-                if (bufferpos < maxbufferpos) continue;
-                if (bufferpos >= buffersize)
-                {
-                    pos += bufferpos;
-                    bufferpos = 0;
-                    UpdateBuffer(pos);
-                }
-                else throw new IndexOutOfRangeException();
-            }
-        }
-
-        public void Dispose()
-        {
-            buffer = null;
-        }
-    }
-}
-
-namespace Midi_Counter_Generator
-{
-    struct pairli
+    struct Pairli
     {
         public long x;
         public double y;
         public int trk, cnt;
-        public pairli(long a, double b, int c, int d)
+        public Pairli(long a, double b, int c, int d)
         {
             x = a;
             y = b;
             trk = c;
             cnt = d;
         }
-        public static bool operator <(pairli fx, pairli fy)
+        public static bool operator <(Pairli fx, Pairli fy)
         {
             if (fx.x != fy.x)
             {
@@ -166,7 +50,7 @@ namespace Midi_Counter_Generator
                 return false;
             }
         }
-        public static bool operator >(pairli fx, pairli fy)
+        public static bool operator >(Pairli fx, Pairli fy)
         {
             if (fx.x != fy.x)
             {
@@ -186,19 +70,19 @@ namespace Midi_Counter_Generator
             }
         }
     }
-    struct pairls
+    struct Pairls
     {
         public long x;
         public String y;
         public int trk, cnt;
-        public pairls(long a, String b, int c, int d)
+        public Pairls(long a, String b, int c, int d)
         {
             x = a;
             y = b;
             trk = c;
             cnt = d;
         }
-        public static bool operator <(pairls fx, pairls fy)
+        public static bool operator <(Pairls fx, Pairls fy)
         {
             if (fx.x != fy.x)
             {
@@ -217,7 +101,7 @@ namespace Midi_Counter_Generator
                 return false;
             }
         }
-        public static bool operator >(pairls fx, pairls fy)
+        public static bool operator >(Pairls fx, Pairls fy)
         {
             if (fx.x != fy.x)
             {
@@ -237,7 +121,7 @@ namespace Midi_Counter_Generator
             }
         }
     }
-    class mainpart
+    class MainPart
     {
         public static string filein, fileout;
         int fps;
@@ -245,17 +129,16 @@ namespace Midi_Counter_Generator
         long alltic = 0;
         int delay;
         static int resol;
-        static Color Colr;
         int mul;
-        int toint(int x)
+        static int Toint(int x)
         {
             return x < 0 ? x + 256 : x;
         }
-        public void read()
+        public void Read()
         {
             Console.WriteLine("Note: There should be an ffmpeg.exe in Counter's folder.");
             Console.WriteLine("Note: .zip .xz .gz .7z .tar .rar (or combinations of '.xz's like .xz.xz) files are allowed, but please use Fast Render on them.");
-            string sss = "";
+            string sss;
             Console.Write("Input MIDI filename: ");
             filein = Console.ReadLine();
             if (filein[0] == '\"')
@@ -287,25 +170,8 @@ namespace Midi_Counter_Generator
             Console.WriteLine("If you want to know how to edit patterns, please read README.txt in the Patterns folder.");
             Console.Write("Input pattern ID (Default: 0): ");
             pat = (sss = Console.ReadLine()) == "" ? "0" : sss;
-            Console.Write("Input text color name (Default: White): ");
-            String ssss = (sss = Console.ReadLine()) == "" ? "White" : sss;
             Console.Write("Input multiplier (Default: 1): ");
             mul = Convert.ToInt32((sss = Console.ReadLine()) == "" ? "1" : sss);
-
-            sss = "";
-            if (ssss[0] > 'Z' || ssss[0] < 'A')
-            {
-                sss += (char)(ssss[0] - 32);
-            }
-            else
-            {
-                sss += ssss[0];
-            }
-            for (int i = 1; i < ssss.Length; i++)
-            {
-                sss += ssss[i];
-            }
-            Colr = Color.FromName(sss);
         }
 
         struct Patterns
@@ -315,7 +181,7 @@ namespace Midi_Counter_Generator
             public int fontsz;
             public string patterns;
 
-            public void readpattern(string id)
+            public void Readpattern(string id)
             {
                 string fol = "Patterns/" + id + ".txt";
                 StreamReader inpp = new StreamReader(fol);
@@ -335,7 +201,7 @@ namespace Midi_Counter_Generator
                     patterns += "\n";
                 }
             }
-            public string tocom(long s)
+            public static string Tocom(long s)
             {
                 string S = Convert.ToString(s);
                 string SS = "";
@@ -352,71 +218,72 @@ namespace Midi_Counter_Generator
                 }
                 return SS;
             }
-            public string getstring(long nc, long an, double bp, double tm, long np, long po, long ti, long at)
+            public string Getstring(long nc, long an, double bp, double tm, long np, long po, long ti, long at)
             {
                 string ss = patterns;
                 ss = ss.Replace("{0}", Convert.ToString(nc));
-                ss = ss.Replace("{0,}", tocom(nc));
+                ss = ss.Replace("{0,}", Tocom(nc));
                 ss = ss.Replace("{1}", Convert.ToString(an));
-                ss = ss.Replace("{1,}", tocom(an));
+                ss = ss.Replace("{1,}", Tocom(an));
                 ss = ss.Replace("{1-0}", Convert.ToString(an - nc));
-                ss = ss.Replace("{1-0,}", tocom(an - nc));
+                ss = ss.Replace("{1-0,}", Tocom(an - nc));
                 ss = ss.Replace("{2}", Convert.ToString(Math.Round(bp * 10) / 10));
                 ss = ss.Replace("{3}", Convert.ToInt32(tm * 100) / 100 + "." + (Convert.ToInt32(tm * 100) % 100 / 10) + (Convert.ToInt32(tm * 100) % 10));
                 ss = ss.Replace("{4}", Convert.ToString(np));
-                ss = ss.Replace("{4,}", tocom(np));
+                ss = ss.Replace("{4,}", Tocom(np));
                 ss = ss.Replace("{5}", Convert.ToString(po));
-                ss = ss.Replace("{5,}", tocom(po));
+                ss = ss.Replace("{5,}", Tocom(po));
                 ss = ss.Replace("{6}", Convert.ToString(ti));
-                ss = ss.Replace("{6,}", tocom(ti));
+                ss = ss.Replace("{6,}", Tocom(ti));
                 ss = ss.Replace("{7}", Convert.ToString(at));
-                ss = ss.Replace("{7,}", tocom(at));
+                ss = ss.Replace("{7,}", Tocom(at));
                 ss = ss.Replace("{7-6}", Convert.ToString(at - ti));
-                ss = ss.Replace("{7-6,}", tocom(at - ti));
+                ss = ss.Replace("{7-6,}", Tocom(at - ti));
                 ss = ss.Replace("{8}", Convert.ToString(ti / resol + 1));
                 ss = ss.Replace("{9}", Convert.ToString(at / resol + 1));
                 ss = ss.Replace("{9-8}", Convert.ToString(at / resol - ti / resol));
                 ss = ss.Replace("{A}", Convert.ToString(resol));
-                ss = ss.Replace("{A,}", tocom(resol));
+                ss = ss.Replace("{A,}", Tocom(resol));
                 return ss;
             }
 
-            public Image drew(long nc, long an, double bp, double tm, long np, long po, long ti, long at, int times)
+            public SKImage Draw(long nc, long an, double bp, double tm, long np, long po, long ti, long at, int times)
             {
-                nc = nc * times;
-                an = an * times;
-                np = np * times;
-                po = po * times;
-                using (var font = new Font(fon, fontsz))
+                nc *= times;
+                an *= times;
+                np *= times;
+                po *= times;
+                var font = new SKFont(SKTypeface.FromFamilyName(fon), fontsz, 1, 0);
+                var surface = SKSurface.Create(new SKImageInfo(W, H));
+                SKCanvas canvas = surface.Canvas;
+                canvas.Clear(SKColors.Black);
+                var paint = new SKPaint
                 {
-                    Image image = new Bitmap(W, H, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                    using (var gfx = Graphics.FromImage(image))
-                    {
-                        gfx.FillRectangle(Brushes.Transparent, 0, 0, image.Width, image.Height);
-
-                        using (var textBrush = new SolidBrush(Colr))
-                        {
-                            gfx.DrawString(getstring(nc, an, bp, tm, np, po, ti, at), font, textBrush, new PointF(0, 0));
-                        }
-                    }
-                    return image;
-                }
+                    TextSize = 64.0f,
+                    IsAntialias = false,
+                    Color = new SKColor(255, 255, 255),
+                    Style = SKPaintStyle.Fill
+                };
+                canvas.DrawText(Getstring(nc, an, bp, tm, np, po, ti, at), 0, 0, font, paint);
+                return surface.Snapshot();
             }
         }
         Patterns pts;
         
-        Process startNewSSFF(string path)
+        Process StartNewSSFF(string path)
         {
-            Process ffmpeg = new Process();
+            Process ffmpeg = new();
             string args = "" +
                     " -f rawvideo -s " + pts.W + "x" + pts.H + " -strict -2 " + " -pix_fmt argb"
                     + " -r " + Convert.ToString(fps) + " -i - " + "-vf vflip -vcodec libx264 -crf 0 ";
             args += " -y \"" + path + "\"";
             Console.WriteLine(args);
-            ffmpeg.StartInfo = new ProcessStartInfo("ffmpeg", args);
-            ffmpeg.StartInfo.RedirectStandardInput = true;
-            ffmpeg.StartInfo.UseShellExecute = false;
-            ffmpeg.StartInfo.RedirectStandardError = false;
+            ffmpeg.StartInfo = new ProcessStartInfo("ffmpeg", args)
+            {
+                RedirectStandardInput = true,
+                UseShellExecute = false,
+                RedirectStandardError = false
+            };
             try
             {
                 ffmpeg.Start();
@@ -521,7 +388,8 @@ namespace Midi_Counter_Generator
             }
             throw new Exception("No compatible file found in the .gz");
         }
-        void FastRender()
+
+        public void Render()
         {
             Stream inpp = File.Open(filein, FileMode.Open, FileAccess.Read, FileShare.Read);
             while (!filein.EndsWith(".mid"))
@@ -569,16 +437,16 @@ namespace Midi_Counter_Generator
             ReadByte();
             ReadByte();
             int trkcnt;
-            trkcnt = (toint(ReadByte()) * 256) + toint(ReadByte());
+            trkcnt = (Toint(ReadByte()) * 256) + Toint(ReadByte());
             Console.WriteLine("Track Count: {0}", trkcnt);
-            resol = (toint(ReadByte()) * 256) + toint(ReadByte());
-            ArrayList bpm = new ArrayList
+            resol = (Toint(ReadByte()) * 256) + Toint(ReadByte());
+            ArrayList bpm = new()
             {
-                new pairli(0, 500000 / resol, 99999, 0)
+                new Pairli(0, 500000 / resol, 99999, 0)
             };
             long noteall = 0;
             int nowtrk = 1;
-            ArrayList nts = new ArrayList(), nto = new ArrayList();
+            ArrayList nts = new(), nto = new();
             for (int trk = 0; trk < trkcnt; trk++)
             {
                 int bpmcnt = 0;
@@ -591,7 +459,7 @@ namespace Midi_Counter_Generator
                 ReadByte();
                 for (int i = 0; i < 4; i++)
                 {
-                    leng = leng * 256 + toint(ReadByte());
+                    leng = leng * 256 + Toint(ReadByte());
                 }
                 int lstcmd = 256;
                 Console.WriteLine("Reading track {1}/{2}, Size {3}", nowtrk, trk + 1, trkcnt, leng);
@@ -601,7 +469,7 @@ namespace Midi_Counter_Generator
                     int ch = 256;
                     while (ch >= 128)
                     {
-                        ch = toint(ReadByte());
+                        ch = Toint(ReadByte());
                         leng--;
                         ans = ans * 128 + (ch & 0b01111111);
                     }
@@ -616,7 +484,7 @@ namespace Midi_Counter_Generator
                         return lstcmd2;
                     }
                     leng--;
-                    return toint(ReadByte());
+                    return Toint(ReadByte());
                 }
                 int TM = 0;
                 int prvcmd = 256;
@@ -685,7 +553,7 @@ namespace Midi_Counter_Generator
                         if (cmd == 0)
                         {
                             ReadByte(); ReadByte(); ReadByte();
-                            leng-=3;
+                            leng -= 3;
                         }
                         else if (cmd >= 1 && cmd <= 10 && cmd != 5 || cmd == 0x7f)
                         {
@@ -714,7 +582,7 @@ namespace Midi_Counter_Generator
                             int BPM = get();
                             BPM = BPM * 256 + get();
                             BPM = BPM * 256 + get();
-                            bpm.Add(new pairli(TM, 1.0 * BPM / resol, trk, bpmcnt));
+                            bpm.Add(new Pairli(TM, 1.0 * BPM / resol, trk, bpmcnt));
                         }
                         else if (cmd == 0x54 || cmd == 0x58)
                         {
@@ -763,9 +631,9 @@ namespace Midi_Counter_Generator
             {
                 for (int j = i + 1; j < bpm.Count; j++)
                 {
-                    if (((pairli)bpm[i]) > ((pairli)bpm[j]))
+                    if (((Pairli)bpm[i]) > ((Pairli)bpm[j]))
                     {
-                        pairli xx = (pairli)bpm[i];
+                        Pairli xx = (Pairli)bpm[i];
                         bpm[j] = bpm[i];
                         bpm[i] = xx;
                     }
@@ -776,11 +644,11 @@ namespace Midi_Counter_Generator
             tmc[0] = 0;
             for (int i = 1; i < bpm.Count; i++)
             {
-                tmc[i] = tmc[i - 1] + (((pairli)bpm[i]).x - ((pairli)bpm[i - 1]).x) * ((pairli)bpm[i - 1]).y;
+                tmc[i] = tmc[i - 1] + (((Pairli)bpm[i]).x - ((Pairli)bpm[i - 1]).x) * ((Pairli)bpm[i - 1]).y;
             }
             Console.WriteLine("Reading pattern...");
-            pts.readpattern(pat);
-            Process ffmp = startNewSSFF(fileout);
+            pts.Readpattern(pat);
+            Process ffmp = StartNewSSFF(fileout);
             int bpmptr = 0;
             double tmm = 0;
             long notecnt = 0;
@@ -788,15 +656,13 @@ namespace Midi_Counter_Generator
             byte[] imagedata;
             for (int i = 0; i < delay; i++)
             {
-                Image img = pts.drew(0, noteall, 120, 0, 0, 0, 0, alltic, mul);
-                MemoryStream ms = new MemoryStream();
-                imagedata = null;
-                img.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                SKImage img = pts.Draw(0, noteall, 120, 0, 0, 0, 0, alltic, mul);
+                MemoryStream ms = new();
+                img.Encode(SKEncodedImageFormat.Bmp, 100).SaveTo(ms);
                 imagedata = ms.GetBuffer();
                 ffmp.StandardInput.BaseStream.Write(imagedata, 54, imagedata.Length - 54);
                 tmdf++;
             }
-            long tmnow = 0;
             long[] history = new long[fps];
             long poly = 0;
             int now = 0;
@@ -812,27 +678,25 @@ namespace Midi_Counter_Generator
                     poly += Convert.ToInt64(nts[now]);
                     poly -= Convert.ToInt64(nto[now]);
                 }
-                Image img = pts.drew(notecnt, noteall, 60000000.0 / resol / ((pairli)bpm[bpmptr]).y, 1.0 * (tmdf - delay) / fps, notecnt - history[tmdf % fps], poly, tmm > alltic ? alltic : Convert.ToInt64(tmm), alltic, mul);
-                MemoryStream ms = new MemoryStream();
-                imagedata = null;
-                img.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                SKImage img = pts.Draw(notecnt, noteall, 60000000.0 / resol / ((Pairli)bpm[bpmptr]).y, 1.0 * (tmdf - delay) / fps, notecnt - history[tmdf % fps], poly, tmm > alltic ? alltic : Convert.ToInt64(tmm), alltic, mul);
+                MemoryStream ms = new();
+                img.Encode(SKEncodedImageFormat.Bmp, 100).SaveTo(ms);
                 imagedata = ms.GetBuffer();
                 ffmp.StandardInput.BaseStream.Write(imagedata, 54, imagedata.Length - 54);
                 history[tmdf % fps] = notecnt;
                 tmdf++;
-                tmnow = Convert.ToInt64((tmdf - delay) * 1000000.0 / fps);
+                long tmnow = Convert.ToInt64((tmdf - delay) * 1000000.0 / fps);
                 while (bpmptr < bpm.Count - 1 && tmc[bpmptr + 1] < Convert.ToDouble(tmnow))
                 {
                     bpmptr++;
                 }
-                tmm = Convert.ToInt32(((pairli)bpm[bpmptr]).x + (tmnow - tmc[bpmptr]) / ((pairli)bpm[bpmptr]).y);
+                tmm = Convert.ToInt32(((Pairli)bpm[bpmptr]).x + (tmnow - tmc[bpmptr]) / ((Pairli)bpm[bpmptr]).y);
             }
             for (int i = 0; i < 5 * fps; i++)
             {
-                Image img = pts.drew(noteall, noteall, 60000000.0 / resol / ((pairli)bpm[bpmptr]).y, 1.0 * (tmdf - delay) / fps, notecnt - history[tmdf % fps], 0, alltic, alltic, mul);
-                MemoryStream ms = new MemoryStream();
-                imagedata = null;
-                img.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                SKImage img = pts.Draw(noteall, noteall, 60000000.0 / resol / ((Pairli)bpm[bpmptr]).y, 1.0 * (tmdf - delay) / fps, notecnt - history[tmdf % fps], 0, alltic, alltic, mul);
+                MemoryStream ms = new();
+                img.Encode(SKEncodedImageFormat.Bmp, 100).SaveTo(ms);
                 imagedata = ms.GetBuffer();
                 ffmp.StandardInput.BaseStream.Write(imagedata, 54, imagedata.Length - 54);
                 history[tmdf % fps] = noteall;
@@ -841,20 +705,6 @@ namespace Midi_Counter_Generator
             ffmp.Close();
             Console.WriteLine("Converting finished. Press any key to exit...");
             Console.ReadKey();
-        }
-        public void Render()
-        {
-            FastRender();
-        }
-    }
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Console.Title = ("MIDI Counter Generator Modded Version 0.2 by Conjac Jelly Charlieyan and flopp");
-            mainpart bsp = new mainpart();
-            bsp.read();
-            bsp.Render();
         }
     }
 }

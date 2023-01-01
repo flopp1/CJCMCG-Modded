@@ -1,0 +1,20 @@
+C:\Users\ethen\convert\obj\Release\net7.0\Midi Counter Generator.csproj.AssemblyReference.cache
+C:\Users\ethen\convert\obj\Release\net7.0\Midi Counter Generator.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ethen\convert\obj\Release\net7.0\Midi Counter Generator.csproj.CoreCompileInputs.cache
+C:\Users\ethen\convert\bin\Release\net7.0\Midi Counter Generator.exe
+C:\Users\ethen\convert\bin\Release\net7.0\Midi Counter Generator.deps.json
+C:\Users\ethen\convert\bin\Release\net7.0\Midi Counter Generator.runtimeconfig.json
+C:\Users\ethen\convert\bin\Release\net7.0\Midi Counter Generator.dll
+C:\Users\ethen\convert\bin\Release\net7.0\Midi Counter Generator.pdb
+C:\Users\ethen\convert\bin\Release\net7.0\SharpCompress.dll
+C:\Users\ethen\convert\bin\Release\net7.0\SkiaSharp.dll
+C:\Users\ethen\convert\bin\Release\net7.0\runtimes\osx\native\libSkiaSharp.dylib
+C:\Users\ethen\convert\bin\Release\net7.0\runtimes\win-arm64\native\libSkiaSharp.dll
+C:\Users\ethen\convert\bin\Release\net7.0\runtimes\win-x64\native\libSkiaSharp.dll
+C:\Users\ethen\convert\bin\Release\net7.0\runtimes\win-x86\native\libSkiaSharp.dll
+C:\Users\ethen\convert\obj\Release\net7.0\Midi Counter Generator.csproj.CopyComplete
+C:\Users\ethen\convert\obj\Release\net7.0\Midi Counter Generator.dll
+C:\Users\ethen\convert\obj\Release\net7.0\refint\Midi Counter Generator.dll
+C:\Users\ethen\convert\obj\Release\net7.0\Midi Counter Generator.pdb
+C:\Users\ethen\convert\obj\Release\net7.0\Midi Counter Generator.genruntimeconfig.cache
+C:\Users\ethen\convert\obj\Release\net7.0\ref\Midi Counter Generator.dll

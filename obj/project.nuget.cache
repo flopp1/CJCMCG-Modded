@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "l6gG4DNvPBHGOzg9pXv7lpeNFdGAPLyxbx1AoijtigdQvfweuXbbSYdBbptSANwdHgtLtNx31SLZmxByu+ageA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\ethen\\convert\\Midi Counter Generator.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ethen\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\ethen\\.nuget\\packages\\microsoft.dotnet.upgradeassistant.extensions.default.analyzers\\0.4.355802\\microsoft.dotnet.upgradeassistant.extensions.default.analyzers.0.4.355802.nupkg.sha512",
+    "C:\\Users\\ethen\\.nuget\\packages\\sharpcompress\\0.32.2\\sharpcompress.0.32.2.nupkg.sha512",
+    "C:\\Users\\ethen\\.nuget\\packages\\skiasharp\\2.88.3\\skiasharp.2.88.3.nupkg.sha512",
+    "C:\\Users\\ethen\\.nuget\\packages\\skiasharp.nativeassets.macos\\2.88.3\\skiasharp.nativeassets.macos.2.88.3.nupkg.sha512",
+    "C:\\Users\\ethen\\.nuget\\packages\\skiasharp.nativeassets.win32\\2.88.3\\skiasharp.nativeassets.win32.2.88.3.nupkg.sha512",
+    "C:\\Users\\ethen\\.nuget\\packages\\system.data.datasetextensions\\4.5.0\\system.data.datasetextensions.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}
